@@ -23,14 +23,13 @@ export default class Mixer extends Readable{
 	private readSample: (offset?: number) => number;
 	private writeSample: (value: number, offset?: number) => number;
 	private sampleByteLength: number;
-	inputs: Input[];
+	private inputs: Input[];
 
 
 	constructor(opt?: Partial<MixerOptions>){
 		const option = {...defaultMixerOption, ...opt};
 
 		super(option.readableOption);
-
 
 		this.option = option;
 		this.buffer = Buffer.alloc(0);
@@ -55,8 +54,11 @@ export default class Mixer extends Readable{
 	}
 
 	_read(size: number){
+
 		let samples = Number.MAX_VALUE;
-		this.inputs.forEach(input => {
+
+		let enableFilter = this.inputs.filter(input => input.isEnabled());
+		enableFilter.forEach(input => {
 			const as = input.availSamples();
 			if (as < samples) samples = as;
 		});
@@ -67,7 +69,7 @@ export default class Mixer extends Readable{
 			const mixedBuffer = Buffer.alloc(samples * this.sampleByteLength * this.option.channels);
 			mixedBuffer.fill(0);
 
-			this.inputs.forEach(input => {
+			enableFilter.forEach(input => {
 				const inputBuffer = this.option.channels == 1 ? input.readMono(samples) : input.readStereo(samples);
 
 				for (let i = 0; i < samples * this.option.channels; i++) {
