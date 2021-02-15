@@ -1,6 +1,7 @@
 //original: https://github.com/stephen/audio-mixer
 
-import {Writable, WritableOptions} from "";
+
+import {Writable, WritableOptions} from "stream";
 
 export type InputOptions = {
 	writableOption: WritableOptions,
