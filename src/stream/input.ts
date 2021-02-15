@@ -26,7 +26,7 @@ export default class Input extends Writable{
 	private writeSample: (value: number, offset?: number) => number;
 	private sampleByteLength: number;
 	private getMoreData: Function | null;
-	private enable: boolean;
+	private active: boolean;
 
 	constructor(opt?: Partial<InputOptions>){
 		const option = {...defaultInputOptions, ...opt};
@@ -54,7 +54,7 @@ export default class Input extends Writable{
 			this.sampleByteLength = 2;
 		}
 
-		this.enable = true;
+		this.active = true;
 
 		this.getMoreData = null;
 	}
@@ -139,12 +139,12 @@ export default class Input extends Writable{
 		return this.option.volume;
 	}
 
-	setEnabled(enable: boolean){
-		this.enable = enable;
+	setActive(status: boolean){
+		this.active = status;
 	}
 
-	isEnabled(){
-		return this.enable;
+	isActive(){
+		return this.active;
 	}
 
 }

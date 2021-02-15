@@ -7,6 +7,8 @@ import Discord, {Client, VoiceBroadcast, VoiceConnection} from "discord.js";
 import { OpusEncoder } from '@discordjs/opus';
 
 import Mixer from "./stream/mixer";
+import {OpusEncodeTransform} from "./stream/opusEncodeTransform";
+import Input from "./stream/input";
 
 log4js.configure({
 	appenders: {
@@ -32,7 +34,15 @@ export const clientA: Client = new Discord.Client();
 export const clientB: Client = new Discord.Client();
 
 
+type session =  {
+	fromVoiceConnection: VoiceConnection,
+	toVoiceConnection: VoiceConnection,
+	encodeTransform: OpusEncodeTransform,
+	mixer: Mixer,
+	memberInputs: Record<string, Input>
+}
 
+const sessions: Record<string, session> = {};
 
 
 clientA.login(process.env.DISCORD_TOKEN_A).then(res => {
@@ -48,21 +58,7 @@ clientB.login(process.env.DISCORD_TOKEN_B).then(res => {
 let connectionA: VoiceConnection;
 let connectionB: VoiceConnection;
 
-const encoder = new OpusEncoder(48000, 2);
-const opusEncoder = new Transform({
-	transform(chunk: any, encoding: string, done: TransformCallback): void {
-		// logger.debug(chunk);
-		// logger.debug(chunk.length);
-		if(chunk.length > 3840){
-
-		}else{
-			const encodedChunk = encoder.encode(chunk);
-			this.push(encodedChunk) // データを下流のパイプに渡す処理
-		}
-
-		done() // 変形処理終了を伝えるために呼び出す
-	},
-})
+const opusEncoder = new OpusEncodeTransform();
 
 const mixer = new Mixer({
 	channels: 2,

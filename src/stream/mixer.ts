@@ -57,7 +57,7 @@ export default class Mixer extends Readable{
 
 		let samples = Number.MAX_VALUE;
 
-		let enableFilter = this.inputs.filter(input => input.isEnabled());
+		let enableFilter = this.inputs.filter(input => input.isActive());
 		enableFilter.forEach(input => {
 			const as = input.availSamples();
 			if (as < samples) samples = as;
