@@ -6,7 +6,7 @@ import log4js from 'log4js';
 import Discord, {Client, VoiceBroadcast, VoiceConnection} from "discord.js";
 import { OpusEncoder } from '@discordjs/opus';
 
-import Mixer from "./mixer";
+import Mixer from "./stream/mixer";
 
 log4js.configure({
 	appenders: {
@@ -28,9 +28,10 @@ const logger = log4js.getLogger();
 logger.info("start process");
 logger.debug("environment", process.env);
 
-
 export const clientA: Client = new Discord.Client();
 export const clientB: Client = new Discord.Client();
+
+
 
 
 
@@ -49,9 +50,6 @@ let connectionB: VoiceConnection;
 
 const encoder = new OpusEncoder(48000, 2);
 const opusEncoder = new Transform({
-	// highWaterMark: 100,
-	// writableHighWaterMark: 100,
-	// readableHighWaterMark: 100,
 	transform(chunk: any, encoding: string, done: TransformCallback): void {
 		// logger.debug(chunk);
 		// logger.debug(chunk.length);
@@ -61,7 +59,6 @@ const opusEncoder = new Transform({
 			const encodedChunk = encoder.encode(chunk);
 			this.push(encodedChunk) // データを下流のパイプに渡す処理
 		}
-
 
 		done() // 変形処理終了を伝えるために呼び出す
 	},
@@ -127,31 +124,6 @@ clientA.on('message', async message => {
 			bitDepth: 16,
 		});
 		audioStream.pipe(mixerInputs[member.user.id]);
-
-
-		// audioStream.on("data", (chunk) => {
-		// 	logger.info(`${member.user.username} data ${chunk.length}`);
-		// 	// audioStream.unpipe(mixerInputs[member.user.id]);
-		// });
-
-		// audioStream.on("pause", () => {
-		// 	logger.info(`${member.user.username} pause`);
-		// });
-		// audioStream.on("resume", () => {
-		// 	logger.info(`${member.user.username} resume`);
-		// 	// audioStream.pipe(mixerInputs[member.user.id]);
-		// });
-		// audioStream.on("end", () => {
-		// 	logger.info(`${member.user.username} end`);
-		// });
-		// audioStream.on("close", () => {
-		// 	logger.info(`${member.user.username} close`);
-		// });
-		//
-		// audioStream.on("readable", () => {
-		// 	logger.info(`${member.user.username} readable`);
-		// });
-
 
 	})
 

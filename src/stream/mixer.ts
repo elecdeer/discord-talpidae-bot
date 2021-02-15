@@ -1,7 +1,7 @@
 //original: https://github.com/stephen/audio-mixer
 
-import {Readable, ReadableOptions} from "stream";
 import Input, {InputOptions} from "./input";
+import {Readable, ReadableOptions} from "stream";
 
 export type MixerOptions = {
 	readableOption: ReadableOptions,
